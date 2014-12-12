@@ -35,17 +35,12 @@ public class RepositoryClient {
     }
 
     private void setLocationAndTrackBack(MavenVersion version) {
-        try{
+        try {
             Files files = getFiles(version);
             version.setLocation(files.getArtifactLocation());
             version.setTrackBackUrl(files.getTrackBackUrl());
-        }catch(Exception ex){
-            LOGGER.error("Error getting location for " + version.getRevisionLabel());
-            if(ex.getMessage() != null)
-                LOGGER.error(ex.getMessage());
-            if(ex.getCause() != null && ex.getCause().getMessage() != null){
-                LOGGER.error(ex.getCause().getMessage());
-            }
+        } catch(Exception ex) {
+            LOGGER.error("Error getting location for " + version.getRevisionLabel(), ex);
             version.setErrorMessage("Plugin could not determine location/trackback. Please see plugin log for details.");
         }
     }
@@ -99,9 +94,8 @@ public class RepositoryClient {
         if (nexusReponseHandler.canHandle()) {
             versions = nexusReponseHandler.getAllVersions();
         } else {
-            LOGGER.warn("Falling back to HTML parsing as the Nexus XML structure was not found");
-            HtmlResponseHandler htmlResponseHandler = new HtmlResponseHandler(repoResponse);
-            versions = htmlResponseHandler.getAllVersions();
+            LOGGER.warn("Returning empty version list - no XML nor HTML Nexus answer found");
+            versions = Collections.emptyList();
         }
         return versions;
     }
@@ -117,15 +111,17 @@ public class RepositoryClient {
             pomFile = nexusReponseHandler.getPOMurl();
             LOGGER.info("pomFile is "+ pomFile);
         } else {
-            HtmlResponseHandler htmlResponseHandler = new HtmlResponseHandler(repoResponse);
-            LOGGER.warn("Falling back to HTML parsing as the Nexus XML structure was not found");
-            files = htmlResponseHandler.getFiles(lookupParams.getArtifactSelectionPattern());
+            LOGGER.warn("Returning empty version list - no XML nor HTML Nexus answer found");
+            files = Collections.emptyList();
         }
-        return new Files(
-                repositoryConnector.getFilesUrlWithBasicAuth(lookupParams, version.getV_Q()),
-                files.get(0),
-                repositoryConnector.getFilesUrl(lookupParams, version.getV_Q()) + pomFile,
-                lookupParams);
+        LOGGER.info("Files: " + files);
+        return files.size() > 0
+                ? new Files(
+                    repositoryConnector.getFilesUrlWithBasicAuth(lookupParams, version.getV_Q()),
+                    files.get(0),
+                    repositoryConnector.getFilesUrl(lookupParams, version.getV_Q()) + pomFile,
+                    lookupParams)
+                : null;
     }
 
     void setRepositoryConnector(RepositoryConnector repositoryConnector) {

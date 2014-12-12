@@ -15,6 +15,9 @@ public class RepoResponse {
         return APPLICATION_XML.equals(mimeType);
     }
 
+    public boolean isHtml() {
+        return TEXT_HTML.equals(mimeType);
+    }
     public String getMimeType() {
         return mimeType;
     }

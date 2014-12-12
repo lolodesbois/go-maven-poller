@@ -13,6 +13,8 @@ import java.text.SimpleDateFormat;
  */
 public class ContentItem {
     public static final SimpleDateFormat MAVEN_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S 'UTC'");
+	public static final SimpleDateFormat HTML_MAVEN_DATE_FORMAT = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
+
     private String resourceURI;
 	private String relativePath;
 	private String text;

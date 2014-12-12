@@ -15,4 +15,14 @@ public class MavenVersionTest {
         assertThat(v.getV_Q(), is(label));
         assertThat(v.getRevisionLabel(), is("g:a."+label));
     }
+
+    @Test
+    public void testVersionLabelNoQualifier() {
+        String label = "1.2.3";
+        MavenVersion v = new MavenVersion(label);
+        v.setArtifactId("a");
+        v.setGroupId("g");
+        assertThat(v.getV_Q(), is(label));
+        assertThat(v.getRevisionLabel(), is("g:a." + label));
+    }
 }

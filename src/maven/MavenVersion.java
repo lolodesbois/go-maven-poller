@@ -1,7 +1,6 @@
 package maven;
 
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
-import maven.Version;
 import com.tw.go.plugin.maven.config.LookupParams;
 
 import java.util.Date;
@@ -19,9 +18,12 @@ public class MavenVersion extends Version {
     }
 
     public String getRevisionLabel() {
-        return String.format("%s:%s.%s%s%s", groupId, artifactId, version, lastDelimiter, qualifier);
+        return String.format("%s:%s.%s%s", groupId, artifactId, version, qualifierWithDelimiter(qualifier));
     }
 
+    private String qualifierWithDelimiter(String qualifier) {
+        return qualifier != null ? lastDelimiter + qualifier : "";
+    }
     public PackageRevision toPackageRevision() {
         PackageRevision packageRevision = new PackageRevision(getRevisionLabel(), lastModified, null,null, trackBackUrl);
         packageRevision.addData(LookupParams.PACKAGE_LOCATION, location);
