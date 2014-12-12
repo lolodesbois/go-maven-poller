@@ -34,7 +34,7 @@
     </target>
 
     <target name="compile.source" depends="prepare, resolve">
-        <javac srcdir="src" destdir="${target.dir}/src" classpathref="compile.classpath" includeantruntime="false" source="1.6"/>
+        <javac srcdir="src" destdir="${target.dir}/src" classpathref="compile.classpath" includeantruntime="false" source="1.6" target="1.6"/>
     </target>
 
     <target name="compile.test" depends="compile.source">
@@ -67,6 +67,9 @@
             <fileset dir="lib">
                 <exclude name="junit*.jar"/>
                 <exclude name="mockito*.jar"/>
+                <exclude name="hamcrest*.jar"/>
+                <exclude name="*-sources.jar"/>
+                <exclude name="*-javadoc.jar"/>
                 <include name="*.jar"/>
             </fileset>
             <file file="sdk/go-plugin-util.jar"/>
