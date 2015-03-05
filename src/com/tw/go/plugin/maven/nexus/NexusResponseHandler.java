@@ -3,8 +3,10 @@ package com.tw.go.plugin.maven.nexus;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.tw.go.plugin.maven.client.HtmlResponseParser;
 import com.tw.go.plugin.maven.client.RepoResponse;
+
 import maven.MavenVersion;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,9 +15,11 @@ public class NexusResponseHandler {
     private static final String FILES_TO_IGNORE = "^maven-metadata.*$|^archetype-catalog.*$|^.*sha1$|^.*md5$|^.*pom$";
     private final RepoResponse repoResponse;
     private Content content;
+	private SimpleDateFormat dateFormat;
 
-    public NexusResponseHandler(RepoResponse repoResponse) {
+    public NexusResponseHandler(RepoResponse repoResponse, SimpleDateFormat dateFormat) {
         this.repoResponse = repoResponse;
+        this.dateFormat = dateFormat;
     }
 
     public boolean canHandle() {
@@ -25,7 +29,7 @@ public class NexusResponseHandler {
         }
         if (repoResponse.isHtml()) {
             LOGGER.info("NexusResponseHandler parsing HTML answer");
-            content = HtmlResponseParser.parse(repoResponse.getResponseBody());
+            content = HtmlResponseParser.parse(repoResponse.getResponseBody(),dateFormat);
         }
         if (content == null) {
             LOGGER.warn("NexusResponseHandler can't handle: " + repoResponse.getMimeType());

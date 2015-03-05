@@ -20,6 +20,7 @@ public class MavenPackageConfig {
     public static final String POLL_VERSION_FROM = "POLL_VERSION_FROM";
     public static final String POLL_VERSION_TO = "POLL_VERSION_TO";
     public static final String INVALID_BOUNDS_MESSAGE = "Lower Bound cannot be >= Upper Bound";
+
     private final PackageConfiguration packageConfig;
     private final Property groupIdConfig;
     private final Property artifactIdConfig;
@@ -58,8 +59,10 @@ public class MavenPackageConfig {
     }
 
     public LookupParams getLookupParams(RepositoryConfiguration repoConfig, PackageRevision previouslyKnownRevision) {
-        return new LookupParams(
-                new MavenRepoConfig(repoConfig).getRepoUrl(),
+    	MavenRepoConfig mrc =  new MavenRepoConfig(repoConfig);
+    	return new LookupParams(
+                mrc.getRepoUrl(),
+                mrc.getDateFormat(),
                 getGroupId(), getArtifactId(), getPackaging(),
                 getPollVersionFrom(),
                 getPollVersionTo(),

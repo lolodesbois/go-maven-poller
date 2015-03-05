@@ -1,16 +1,24 @@
 package com.tw.go.plugin.maven.apimpl;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision;
 import com.tw.go.plugin.maven.config.LookupParams;
 import com.tw.go.plugin.util.HttpRepoURL;
 import com.tw.go.plugin.util.RepoUrl;
 
 public class MavenPollerTest {
+	
+	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy", new Locale("US"));
+
 //    @Test
     public void testCheckPackage(){
         LookupParams params = new LookupParams(
                 (HttpRepoURL) RepoUrl.create("http://localhost:2201/nexus/content/repositories/releases/",
-                        "deployment", "deployment123"),"com.thoughtworks.studios.go","book_management","war",null, null,null);
+                        "deployment", "deployment123"),
+                        DATE_FORMAT,
+                        "com.thoughtworks.studios.go","book_management","war",null, null,null);
         PackageRevision packageRevision = new MavenPoller().poll(params);
         System.out.println(packageRevision.getRevision());
     }

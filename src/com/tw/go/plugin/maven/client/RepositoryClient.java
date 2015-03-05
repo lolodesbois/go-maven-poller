@@ -3,8 +3,10 @@ package com.tw.go.plugin.maven.client;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.tw.go.plugin.maven.config.LookupParams;
 import com.tw.go.plugin.maven.nexus.NexusResponseHandler;
+
 import maven.MavenVersion;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,7 +23,7 @@ public class RepositoryClient {
     public MavenVersion getLatest() {
         RepoResponse repoResponse = repositoryConnector.makeAllVersionsRequest(lookupParams);
         LOGGER.debug(repoResponse.responseBody);
-        List<MavenVersion> allVersions = getAllVersions(repoResponse);
+        List<MavenVersion> allVersions = getAllVersions(repoResponse, lookupParams.getDateFormat());
         MavenVersion latest = getLatest(allVersions);
         if(latest != null){
             latest.setArtifactId(lookupParams.getArtifactId());
@@ -36,7 +38,7 @@ public class RepositoryClient {
 
     private void setLocationAndTrackBack(MavenVersion version) {
         try {
-            Files files = getFiles(version);
+            Files files = getFiles(version, lookupParams.getDateFormat());
             version.setLocation(files.getArtifactLocation());
             version.setTrackBackUrl(files.getTrackBackUrl());
         } catch(Exception ex) {
@@ -88,9 +90,9 @@ public class RepositoryClient {
         return latest.notNewerThan(lastKnownVersion);
     }
 
-    private List<MavenVersion> getAllVersions(RepoResponse repoResponse) {
+    private List<MavenVersion> getAllVersions(RepoResponse repoResponse, SimpleDateFormat simpleDateFormat) {
         List<MavenVersion> versions;
-        NexusResponseHandler nexusReponseHandler = new NexusResponseHandler(repoResponse);
+        NexusResponseHandler nexusReponseHandler = new NexusResponseHandler(repoResponse, simpleDateFormat);
         if (nexusReponseHandler.canHandle()) {
             versions = nexusReponseHandler.getAllVersions();
         } else {
@@ -100,10 +102,10 @@ public class RepositoryClient {
         return versions;
     }
 
-    Files getFiles(MavenVersion version) {
+    Files getFiles(MavenVersion version, SimpleDateFormat dateFormat) {
         RepoResponse repoResponse = repositoryConnector.makeFilesRequest(lookupParams, version.getV_Q());
         LOGGER.debug(repoResponse.responseBody);
-        NexusResponseHandler nexusReponseHandler = new NexusResponseHandler(repoResponse);
+        NexusResponseHandler nexusReponseHandler = new NexusResponseHandler(repoResponse, dateFormat);
         List<String> files;
         String pomFile = null;
         if (nexusReponseHandler.canHandle()) {

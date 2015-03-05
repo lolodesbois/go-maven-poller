@@ -18,10 +18,12 @@ import java.util.Arrays;
 
 import static com.thoughtworks.go.plugin.api.config.Property.*;
 import static com.tw.go.plugin.maven.config.MavenPackageConfig.*;
+import static com.tw.go.plugin.maven.config.MavenRepoConfig.*;
 
 public class PluginConfig implements PackageMaterialConfiguration {
 
     private static Logger LOGGER = Logger.getLoggerFor(PluginConfig.class);
+    
     public static final Property REPO_CONFIG_REPO_URL =
             new PackageMaterialProperty(RepoUrl.REPO_URL).with(DISPLAY_NAME, "Maven Repo base URL").with(DISPLAY_ORDER, 0);
 
@@ -30,6 +32,12 @@ public class PluginConfig implements PackageMaterialConfiguration {
 
     public static final Property REPO_CONFIG_PASSWORD =
             new PackageMaterialProperty(RepoUrl.PASSWORD).with(REQUIRED, false).with(SECURE, true).with(DISPLAY_NAME, "Password").with(DISPLAY_ORDER, 2).with(PART_OF_IDENTITY, false);
+
+    public static final Property REPO_DATE_FORMAT =
+            new PackageMaterialProperty(DATE_FORMAT).with(DISPLAY_NAME, "Date Format (EEE MMM d HH:mm:ss zzz yyyy)").with(DISPLAY_ORDER, 3).with(PART_OF_IDENTITY, false).withDefault("EEE MMM d HH:mm:ss zzz yyyy");
+
+    public static final Property REPO_DATE_LOCALE =
+            new PackageMaterialProperty(DATE_LOCALE).with(DISPLAY_NAME, "Date Locale (US)").with(DISPLAY_ORDER, 4).with(PART_OF_IDENTITY, false).withDefault("US");
 
     public static final Property PKG_CONFIG_GROUP_ID =
             new PackageMaterialProperty(GROUP_ID).with(DISPLAY_NAME, "Group Id").with(DISPLAY_ORDER, 0);
@@ -52,6 +60,8 @@ public class PluginConfig implements PackageMaterialConfiguration {
         repoConfig.add(REPO_CONFIG_REPO_URL);
         repoConfig.add(REPO_CONFIG_USERNAME);
         repoConfig.add(REPO_CONFIG_PASSWORD);
+        repoConfig.add(REPO_DATE_FORMAT);
+        repoConfig.add(REPO_DATE_LOCALE);
         return repoConfig;
     }
 

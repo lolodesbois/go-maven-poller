@@ -4,29 +4,37 @@ import com.thoughtworks.go.plugin.api.material.packagerepository.PackageRevision
 import com.tw.go.plugin.maven.config.LookupParams;
 import com.tw.go.plugin.maven.nexus.NexusResponseHandler;
 import com.tw.go.plugin.util.HttpRepoURL;
+
 import maven.MavenVersion;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static junit.framework.Assert.assertNull;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class RepositoryClientTest {
+	// Sat Jan 13 01:28:39 EST 2007 "EEE MMM d HH:mm:ss zzz yyyy"
+	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy", new Locale("US"));
+	
     @Test
     public void shouldGetLatestVersion() throws IOException {
         LookupParams lookupParams = new LookupParams(
                 new HttpRepoURL("http://nexus-server:8081/nexus/content/repositories/releases/", null, null),
+                DATE_FORMAT,
                 "com.thoughtworks.studios.go", "book_inventory", "war", null, null, null);
         RepositoryClient client = new RepositoryClient(lookupParams);
         String responseBody = FileUtils.readFileToString(new File("test/fast/nexus-response.xml"));
-        NexusResponseHandler nexusResponseHandler = new NexusResponseHandler(new RepoResponse(responseBody, RepoResponse.APPLICATION_XML));
+        NexusResponseHandler nexusResponseHandler = new NexusResponseHandler(new RepoResponse(responseBody, RepoResponse.APPLICATION_XML),DATE_FORMAT);
         MavenVersion result = client.getLatest(nexusResponseHandler.getAllVersions());
         assertThat(result.getVersion(), is("1.0.0"));
         assertThat(result.getQualifier(), is("18"));
@@ -38,10 +46,11 @@ public class RepositoryClientTest {
         previouslyKnownRevision.addData(LookupParams.PACKAGE_VERSION, "1.0.0-18");
         LookupParams lookupParams = new LookupParams(
                 new HttpRepoURL("http://nexus-server:8081/nexus/content/repositories/releases/", null, null),
+                DATE_FORMAT,
                 "com.thoughtworks.studios.go", "book_inventory", "war", null, null, previouslyKnownRevision);
         RepositoryClient client = new RepositoryClient(lookupParams);
         String responseBody = FileUtils.readFileToString(new File("test/fast/nexus-response.xml"));
-        NexusResponseHandler nexusResponseHandler = new NexusResponseHandler(new RepoResponse(responseBody, RepoResponse.APPLICATION_XML));
+        NexusResponseHandler nexusResponseHandler = new NexusResponseHandler(new RepoResponse(responseBody, RepoResponse.APPLICATION_XML), DATE_FORMAT);
         assertNull(client.getLatest(nexusResponseHandler.getAllVersions()));
     }
 
@@ -51,10 +60,11 @@ public class RepositoryClientTest {
         previouslyKnownRevision.addData(LookupParams.PACKAGE_VERSION, "1.0.0-17");
         LookupParams lookupParams = new LookupParams(
                 new HttpRepoURL("http://nexus-server:8081/nexus/content/repositories/releases/", null, null),
+                DATE_FORMAT,
                 "com.thoughtworks.studios.go", "book_inventory", "war", null, null, previouslyKnownRevision);
         RepositoryClient client = new RepositoryClient(lookupParams);
         String responseBody = FileUtils.readFileToString(new File("test/fast/nexus-response.xml"));
-        NexusResponseHandler nexusResponseHandler = new NexusResponseHandler(new RepoResponse(responseBody, RepoResponse.APPLICATION_XML));
+        NexusResponseHandler nexusResponseHandler = new NexusResponseHandler(new RepoResponse(responseBody, RepoResponse.APPLICATION_XML),DATE_FORMAT);
         MavenVersion result = client.getLatest(nexusResponseHandler.getAllVersions());
         assertThat(result.getVersion(), is("1.0.0"));
         assertThat(result.getQualifier(), is("18"));
@@ -67,6 +77,7 @@ public class RepositoryClientTest {
         String upperBound = "1.0.17";
         LookupParams lookupParams = new LookupParams(
                 new HttpRepoURL("http://nexus-server:8081/nexus/content/repositories/releases/", null, null),
+                DATE_FORMAT,
                 "com.thoughtworks.studios.go", "book_inventory", "war", null, upperBound, previouslyKnownRevision);
         RepositoryClient client = new RepositoryClient(lookupParams);
         List<MavenVersion> allVersions = new ArrayList<MavenVersion>();
@@ -85,6 +96,7 @@ public class RepositoryClientTest {
         String lowerBound = "0.1";
         LookupParams lookupParams = new LookupParams(
                 new HttpRepoURL("http://nexus-server:8081/nexus/content/repositories/releases/", null, null),
+                DATE_FORMAT,
                 "com.thoughtworks.studios.go", "book_inventory", "war", lowerBound, null, previouslyKnownRevision);
         RepositoryClient client = new RepositoryClient(lookupParams);
         List<MavenVersion> allVersions = new ArrayList<MavenVersion>();
@@ -104,6 +116,7 @@ public class RepositoryClientTest {
         String lowerBound = "0.1";
         LookupParams lookupParams = new LookupParams(
                 new HttpRepoURL("http://nexus-server:8081/nexus/content/repositories/releases/", null, null),
+                DATE_FORMAT,
                 "com.thoughtworks.studios.go", "book_inventory", "war", lowerBound, null, null);
         RepositoryClient client = new RepositoryClient(lookupParams);
         List<MavenVersion> allVersions = new ArrayList<MavenVersion>();
@@ -125,6 +138,7 @@ public class RepositoryClientTest {
         String upperBound = "1.0.0-17";
         LookupParams lookupParams = new LookupParams(
                 new HttpRepoURL("http://nexus-server:8081/nexus/content/repositories/releases/", null, null),
+                DATE_FORMAT,
                 "com.thoughtworks.studios.go", "book_inventory", "war", null, upperBound, previouslyKnownRevision);
         RepositoryClient client = new RepositoryClient(lookupParams);
         List<MavenVersion> allVersions = new ArrayList<MavenVersion>();

@@ -1,11 +1,18 @@
 package com.tw.go.plugin.maven.config;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 import com.thoughtworks.go.plugin.api.config.Property;
 import com.thoughtworks.go.plugin.api.material.packagerepository.RepositoryConfiguration;
 import com.tw.go.plugin.util.HttpRepoURL;
 import com.tw.go.plugin.util.RepoUrl;
 
 public class MavenRepoConfig {
+
+	public static final String DATE_FORMAT = "DATE_FORMAT";
+	public static final String DATE_LOCALE = "DATE_LOCALE";
+
     private final RepositoryConfiguration repoConfig;
     private final Property repoUrlProperty;
 
@@ -28,6 +35,11 @@ public class MavenRepoConfig {
         return (HttpRepoURL) repoUrl;
     }
 
+    public SimpleDateFormat getDateFormat() {
+    	return new SimpleDateFormat(repoConfig.get(DATE_FORMAT).getValue(), 
+    			                    new Locale(repoConfig.get(DATE_LOCALE).getValue()));
+    }
+    
     private String withTrailingSlash(String repoUrl) {
         if(repoUrl.endsWith("/")) return repoUrl;
         return repoUrl + "/";
@@ -38,6 +50,6 @@ public class MavenRepoConfig {
     }
 
     public static String[] getValidKeys() {
-        return new String[]{RepoUrl.REPO_URL, RepoUrl.USERNAME, RepoUrl.PASSWORD};
+        return new String[]{RepoUrl.REPO_URL, RepoUrl.USERNAME, RepoUrl.PASSWORD, DATE_FORMAT, DATE_LOCALE};
     }
 }

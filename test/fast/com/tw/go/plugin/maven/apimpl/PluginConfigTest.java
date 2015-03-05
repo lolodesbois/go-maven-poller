@@ -51,6 +51,18 @@ public class PluginConfigTest {
         assertThat(configurations.get(RepoUrl.PASSWORD).getOption(REQUIRED), is(false));
         assertThat(configurations.get(RepoUrl.PASSWORD).getOption(DISPLAY_NAME), is("Password"));
         assertThat(configurations.get(RepoUrl.PASSWORD).getOption(DISPLAY_ORDER), is(2));
+
+        assertThat(configurations.get(MavenRepoConfig.DATE_FORMAT), is(notNullValue()));
+        assertThat(configurations.get(MavenRepoConfig.DATE_FORMAT).getOption(SECURE), is(false));
+        assertThat(configurations.get(MavenRepoConfig.DATE_FORMAT).getOption(REQUIRED), is(true));
+        //assertThat(configurations.get(MavenRepoConfig.DATE_FORMAT).getOption(DISPLAY_NAME), is("Date Format"));
+        assertThat(configurations.get(MavenRepoConfig.DATE_FORMAT).getOption(DISPLAY_ORDER), is(3));
+
+        assertThat(configurations.get(MavenRepoConfig.DATE_LOCALE), is(notNullValue()));
+        assertThat(configurations.get(MavenRepoConfig.DATE_LOCALE).getOption(SECURE), is(false));
+        assertThat(configurations.get(MavenRepoConfig.DATE_LOCALE).getOption(REQUIRED), is(true));
+        //assertThat(configurations.get(MavenRepoConfig.DATE_FORMAT).getOption(DISPLAY_NAME), is("Date Locale(US)"));
+        assertThat(configurations.get(MavenRepoConfig.DATE_LOCALE).getOption(DISPLAY_ORDER), is(4));    
     }
 
     @Test

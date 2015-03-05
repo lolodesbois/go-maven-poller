@@ -6,3 +6,4 @@ go-plugin-api*.jar
 reports/*
 lib/*
 sdk/*
+/bin/

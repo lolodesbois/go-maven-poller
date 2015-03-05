@@ -1,10 +1,7 @@
 package com.tw.go.plugin.maven.client;
 
-import com.thoughtworks.go.plugin.api.logging.Logger;
-import com.tw.go.plugin.maven.nexus.Content;
-import com.tw.go.plugin.maven.nexus.ContentItem;
-
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +12,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.thoughtworks.go.plugin.api.logging.Logger;
+import com.tw.go.plugin.maven.nexus.Content;
+import com.tw.go.plugin.maven.nexus.ContentItem;
+
 public class HtmlResponseParser {
 
     private static final int HREF_CELL_INDEX = 0;
@@ -23,27 +24,27 @@ public class HtmlResponseParser {
 
     private static final Logger LOGGER = Logger.getLoggerFor(HtmlResponseParser.class);
 
-    public static Content parse(String html) {
+    public static Content parse(String html, SimpleDateFormat dateFormat) {
         Document doc = Jsoup.parse(html);
         Elements rows = doc.body().getElementsByTag("table").get(0).getElementsByTag("tbody").get(0).getElementsByTag("tr");
         Content result = new Content();
         List<ContentItem> items = new ArrayList<ContentItem>(rows.size());
         LOGGER.debug("Parsing HTML, number of rows to parse: " + rows.size());
         for (Element row: rows) {
-            ContentItem item = parseRow2(row);
+            ContentItem item = parseRow2(row, dateFormat);
             if (item != null) items.add(item);
         }
         result.setContentItems(items);
         return result;
     }
 
-    private static ContentItem parseRow2(Element row) {
+    private static ContentItem parseRow2(Element row, SimpleDateFormat sdf) {
         try {
             Elements cells = row.getElementsByTag("td");
             if (cells.size() < 3) return null;
             ContentItem item = new ContentItem();
             boolean isOk = parseHrefCell(cells.get(HREF_CELL_INDEX), item);
-            if (isOk) isOk = parseDateCell(cells.get(DATE_CELL_INDEX), item);
+            if (isOk) isOk = parseDateCell(cells.get(DATE_CELL_INDEX), item, sdf);
             if (isOk) isOk = parseSizeCell(cells.get(SIZE_CELL_INDEX), item);
             if (isOk) {
                 return item;
@@ -73,14 +74,14 @@ public class HtmlResponseParser {
         return true;
     }
 
-    private static boolean parseDateCell(Element cell, ContentItem item) {
+    private static boolean parseDateCell(Element cell, ContentItem item, SimpleDateFormat sdf) {
         String date = cell.text();
         Date d;
         try {
-            d = ContentItem.HTML_MAVEN_DATE_FORMAT.parse(date);
+            d = sdf.parse(date);
         } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+            throw new RuntimeException("Unable to parse date [" + date +"] from table cell using package pattern",e);
+        }    	
         item.setLastModified(ContentItem.MAVEN_DATE_FORMAT.format(d));
         return true;
     }

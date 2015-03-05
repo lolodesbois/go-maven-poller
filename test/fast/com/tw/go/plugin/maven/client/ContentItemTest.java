@@ -1,11 +1,12 @@
 package com.tw.go.plugin.maven.client;
 
-import com.tw.go.plugin.maven.nexus.ContentItem;
-import maven.MavenVersion;
-import org.junit.Test;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import maven.MavenVersion;
+
+import org.junit.Test;
+
+import com.tw.go.plugin.maven.nexus.ContentItem;
 
 public class ContentItemTest {
     @Test
@@ -23,4 +24,5 @@ public class ContentItemTest {
         assertThat(v.getQualifier(), is("15"));
         assertThat(ContentItem.MAVEN_DATE_FORMAT.format(v.getLastModified()), is(lastModified));
     }
+    
 }

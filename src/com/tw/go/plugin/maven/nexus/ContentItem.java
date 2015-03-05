@@ -1,10 +1,11 @@
 package com.tw.go.plugin.maven.nexus;
 
-import maven.MavenVersion;
-
-import javax.xml.bind.annotation.XmlElement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
+import javax.xml.bind.annotation.XmlElement;
+
+import maven.MavenVersion;
 
 /**
  * @see com.tw.go.plugin.maven.nexus.Content
@@ -12,7 +13,7 @@ import java.text.SimpleDateFormat;
  * @author mrumpf
  */
 public class ContentItem {
-    public static final SimpleDateFormat MAVEN_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S 'UTC'");
+    public static final SimpleDateFormat MAVEN_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S zzz");
 	public static final SimpleDateFormat HTML_MAVEN_DATE_FORMAT = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
 
     private String resourceURI;
@@ -62,11 +63,16 @@ public class ContentItem {
 		return lastModified;
 	}
 
-	@XmlElement
+	/**
+	 * Format must follow {@link #MAVEN_DATE_FORMAT} ie: 2012-04-22 20:08:56.0 CEST
+	 * @param lastModified
+	 */
+	@XmlElement	
 	public void setLastModified(String lastModified) {
 		this.lastModified = lastModified;
 	}
-
+	
+	
 	public String getSizeOnDisk() {
 		return sizeOnDisk;
 	}
@@ -101,8 +107,9 @@ public class ContentItem {
         try {
             result.setLastModified(MAVEN_DATE_FORMAT.parse(lastModified));
         } catch (ParseException e) {
-            throw new RuntimeException(String.format("Error parsing date %s for resource %s", lastModified, resourceURI), e);
+            throw new RuntimeException(String.format("Error parsing date %s for resource %s", lastModified, resourceURI), e);			
         }
+        
         return result;
     }
 }
